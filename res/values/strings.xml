@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="app_name">algorithm</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="active_two">algorithm</string>
+</resources>

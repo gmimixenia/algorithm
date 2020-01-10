@@ -1,0 +1,858 @@
+package com.hacker.algorithm;
+
+
+import android.app.Activity;
+import android.media.*;
+import java.util.concurrent.TimeUnit ; 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.view.inputmethod.InputMethodManager;
+import android.content.Intent;
+import android.content.Context;
+import android.util.TypedValue;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.lang.Object;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.graphics.Color;
+import android.widget.ImageButton;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.*;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.view.View;
+import android.view.ViewGroup;
+import android.content.res.Resources;
+import android.view.Gravity;
+
+public class MainActivity extends Activity implements View.OnClickListener{
+	String name;
+	boolean dialog_started=false;
+	boolean dialog_started2=false;
+	boolean dialog_two=false;
+	boolean f_pass=false;
+	int a_data=-1;
+	boolean fbi_pass=false;
+	int []dialog_one_steps=new int [10];
+	final int [] el_answers=new int[10];
+	final int [] adam_answers=new int[10];
+	volatile int tag;
+	volatile int dialog_num;
+	volatile int tag_dialog;
+	SoundPool sp;
+	int soundIdMes;
+	ScrollView v_scr;
+	
+	
+	MediaPlayer mediaPlayer,mes_play;
+	AudioManager am;
+	
+	SharedPreferences sPref;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		mediaPlayer = MediaPlayer.create(this, R.raw.main);
+		mediaPlayer.setLooping(true);
+		
+		mes_play = MediaPlayer.create(this, R.raw.message);
+		mes_play.setLooping(false);
+		load_data();
+		//Arrays.fill(dialog_one_steps, -1); 
+		setContentView(R.layout.main);	
+		mediaPlayer.start();
+		ImageButton myButton = (ImageButton)findViewById(R.id.imageB);
+		myButton.setOnClickListener(this);
+		
+		
+		
+		
+	}
+	protected void onStop() {
+		  super.onStop();
+		  save_data();
+		  mediaPlayer.stop();
+		}
+		
+	
+	
+	
+		 public void onClick(View v) {
+
+			    switch (v.getId()) {
+
+			       case R.id.imageB:
+			    	   //mediaPlayer.start();
+			    	   if (name==null)
+			    	   {
+			        	setContentView(R.layout.name_enter);
+			        	Name_hacker();
+			    	   }
+			    	   else
+			    	   {
+			    		   
+			    		setContentView(R.layout.main_apps);
+			    		
+				        PartTwo(); 
+			    		   
+			    	   }
+			        	//Intent intent = new Intent(this , Helolo.class);
+			            //startActivity(intent);
+			            break;
+			            
+			       case R.id.okbut:
+			    	    EditText edit =  (EditText) findViewById(R.id.editText1);
+			    	    name=edit.getText().toString();
+			    	    //save_data();
+			        	setContentView(R.layout.main_apps);
+			        	PartTwo();
+			        	break;
+
+			       case R.id.imageButton1:
+			        	setContentView(R.layout.contacts_list);
+			        	TextView name_text= (TextView) findViewById(R.id.textView1);
+			        	name_text.setText(name);
+			        	Back_button();
+			        	data_dialog();
+			            break;
+
+			        case R.id.imageButton2:
+			        case R.id.back_f_pas:
+			        	if (fbi_pass)
+			        	{
+			        		setContentView(R.layout.password_browser);
+			        		Data_button();
+			        		
+			        	}
+			        	else
+			        	{
+			        	setContentView(R.layout.browser_hack);
+			        	}
+			        	
+			        	Back_button();
+			            break;
+			        case R.id.okbut2:
+			        	call_number();
+			        	break;
+
+			        case R.id.imageButton3:
+			        	setContentView(R.layout.phone_call);
+			        	Back_button();
+			        	ok_but_f();
+			        				        	
+			            break;
+			            
+			        case R.id.screen:
+			        	hide_k();
+			        	break;
+			        case R.id.contact1:
+			        	setContentView(R.layout.file_one);
+			        	Back_button();
+			        	break;
+			        case R.id.contact2:
+			        	setContentView(R.layout.file_two);
+			        	Back_button();
+			        	break;
+			        case R.id.contact3:
+			        	setContentView(R.layout.file_three);
+			        	Back_button();
+			        	break;
+			        case R.id.imageButton4:
+			        case R.id.back_f2:
+			        	setContentView(R.layout.chat_hack);
+			        	
+			        	Back_button();
+			        	
+			        	if (dialog_two)
+			        	{
+			        		dialog_new("BaronSamedi",2);
+			        	}
+			        	
+			        	First_dialog();
+			            break;
+			        case R.id.one_text:
+			        	setContentView(R.layout.dialog_f);
+			        	Back_button_dialogs();
+			        	Dialog_one();
+			        	break;
+			        case R.id.enter_button:
+			        	check_password();
+			        	break;
+			        	
+			        case R.id.data_button:
+			        	
+			        	setContentView(R.layout.data_password);
+			        	Back_button_password();
+			        	
+			        	break;	        	
+			        case R.id.back_f:
+			        	setContentView(R.layout.main_apps);
+			        	PartTwo();
+			            break;
+			        
+			    }
+
+			}
+		 
+		 public void onSaveInstanceState(Bundle savedInstanceState) {
+			 
+			    super.onSaveInstanceState(savedInstanceState);
+			    
+			}
+		 
+		 public void save_data() {
+			 		
+			    sPref = getPreferences(MODE_PRIVATE);
+			    Editor ed = sPref.edit();
+			    ed.putString("hacker_name", name);
+			    ed.putBoolean("dialog_started", dialog_started);
+			    ed.putBoolean("dialog_started2", dialog_started2);
+			    ed.putBoolean("dialog_two", dialog_two);
+			    ed.putBoolean("fbi_pass", fbi_pass);
+			    ed.putBoolean("f_pass", f_pass);
+			    ed.putInt("a_data", a_data);
+			    ed.putInt("dialog_num", dialog_num);
+			    ed.putInt("tag_dialog", tag_dialog);
+			    ed.putInt("tag", tag);
+			    
+			    for (int i=0;i<10;i++)
+			    {
+			    	ed.putInt("dialog_one_steps"+ Integer.toString(i), dialog_one_steps[i]);
+			    	ed.putInt("el_answers"+ Integer.toString(i), el_answers[i]);
+			    	ed.putInt("adam_answers"+ Integer.toString(i), adam_answers[i]);
+			    	
+			    	
+			    }
+			    
+			    
+			    
+			    ed.commit();
+			    
+			    
+			    
+			  }
+		 
+		 public void onRestoreInstanceState(Bundle savedInstanceState) {
+			    
+			    super.onRestoreInstanceState(savedInstanceState);
+			    mediaPlayer.start();
+			}
+		 
+		 public void load_data() {
+			    sPref = getPreferences(MODE_PRIVATE);
+			    name = sPref.getString("hacker_name", null);
+			    dialog_started=sPref.getBoolean("dialog_started", false);
+			    dialog_started2=sPref.getBoolean("dialog_started2", false);
+			    dialog_two=sPref.getBoolean("dialog_two", false);
+			    fbi_pass=sPref.getBoolean("fbi_pass", false);
+			    f_pass=sPref.getBoolean("f_pass", false);
+			    a_data=sPref.getInt("a_data", -1);
+			    dialog_num=sPref.getInt("dialog_num", 0);
+			    tag_dialog=sPref.getInt("tag_dialog", 0);
+			    tag=sPref.getInt("tag", 0);
+			    
+			    for(int i=0;i<10;i++)
+			    {
+			    	dialog_one_steps[i]=sPref.getInt("dialog_one_steps"+ Integer.toString(i), -1);
+			    	el_answers[i]=sPref.getInt("el_answers"+ Integer.toString(i), -1);
+			    	adam_answers[i]=sPref.getInt("adam_answers"+ Integer.toString(i), -1);
+			    	
+			    	
+			    	
+			    }
+			    
+			    
+			    
+			   // Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+			    
+			  }
+		 
+		 public void PartTwo()
+		 {
+			 
+			 ImageButton cont_but = (ImageButton)findViewById(R.id.imageButton1);
+			 cont_but.setOnClickListener(this);
+			 ImageButton browser_but = (ImageButton)findViewById(R.id.imageButton2);
+			 browser_but.setOnClickListener(this);
+			 ImageButton phone_but = (ImageButton)findViewById(R.id.imageButton3);
+			 phone_but.setOnClickListener(this);
+			 ImageButton circle_but = (ImageButton)findViewById(R.id.imageButton4);
+			 circle_but.setOnClickListener(this);
+			 if (!dialog_started)
+	    		{
+	    			mes_play.start();
+	    			}
+			 /*if(!dialog_started)
+			 {
+				 sp.play(soundIdMes,10, 10,  0, 0, 1);
+			 }*/
+			 
+			 
+		 }
+		 
+		 
+		 public void Name_hacker()
+		 {
+			 RelativeLayout scr=(RelativeLayout) findViewById(R.id.screen);
+			 scr.setOnClickListener(this);
+			 ImageButton ok_but = (ImageButton)findViewById(R.id.okbut);
+			 ok_but.setOnClickListener(this);
+			 
+		 }
+		 
+		 public void check_password()
+		 {
+			 EditText edit_pas =  (EditText) findViewById(R.id.password_s);
+			 String t_pass=edit_pas.getText().toString();
+			 String p1="brick1980";
+			 String p2="yellow210487";
+			 if (t_pass.equals(p1) || t_pass.equals(p2))
+			 {
+				 Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+				 f_pass=true;
+				 fbi_pass=false;
+				 
+			 }
+			 
+			 else
+			 {
+				 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();				 
+			 }
+			 
+			 
+		 }
+			
+			 
+		 public void hide_k()
+		 {
+			 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			 imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+			 
+		 }
+		 
+		 public void Back_button()
+		 {
+			 
+			 ImageButton back_f = (ImageButton)findViewById(R.id.back_f);
+			 back_f.setOnClickListener(this);
+			 
+			 
+		 }
+		 
+		 public void Back_button_password()
+		 {
+			 
+			 ImageButton back_f3 = (ImageButton)findViewById(R.id.back_f_pas);
+			 back_f3.setOnClickListener(this);
+			 
+			 
+		 }
+		 
+		 public void Back_button_dialogs()
+		 {
+			 ImageButton back_f2 = (ImageButton)findViewById(R.id.back_f2);
+			 back_f2.setOnClickListener(this);
+		 }
+		 
+		 public void ok_but_f()
+		 {
+			 ImageButton ok_but2 = (ImageButton)findViewById(R.id.okbut2);
+			 ok_but2.setOnClickListener(this);
+			 
+			 RelativeLayout scr=(RelativeLayout) findViewById(R.id.screen);
+			 scr.setOnClickListener(this);
+			 
+		 }
+		 
+		 
+		 
+		 public void Data_button()
+		 {
+			 ImageButton data_but = (ImageButton)findViewById(R.id.data_button);
+			 data_but.setOnClickListener(this);
+			 ImageButton enter_but = (ImageButton)findViewById(R.id.enter_button);
+			 enter_but.setOnClickListener(this);
+			 
+			 RelativeLayout scr=(RelativeLayout) findViewById(R.id.screen);
+			 scr.setOnClickListener(this);
+			 
+			 
+		 }
+		 
+		 public void call_number()
+		 {
+			 EditText p_num =  (EditText) findViewById(R.id.phone_number);
+	    	 String number_c=p_num.getText().toString();
+	    	 String n_num="756341882";
+	    	 if (number_c.equals(n_num) && a_data==0)
+	    	 {
+	    		 Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+	    		 a_data=1;
+	    		 
+	    	 }
+	    	 else
+	    	 {
+	    		 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+	    	 }
+			 
+		 }
+		 
+		 public void data_dialog()
+		 {
+			 if (a_data==1)
+			 {
+				 ImageButton cont1 = (ImageButton)findViewById(R.id.contact1); 
+				 ImageButton cont2 = (ImageButton)findViewById(R.id.contact2); 
+				 ImageButton cont3 = (ImageButton)findViewById(R.id.contact3); 
+				 cont1.setVisibility(View.VISIBLE);
+				 cont2.setVisibility(View.VISIBLE);
+				 cont3.setVisibility(View.VISIBLE);
+				 cont1.setOnClickListener(this);
+				 cont2.setOnClickListener(this);
+				 cont3.setOnClickListener(this);
+			 }
+			 
+		 }
+		 
+		 public void First_dialog()
+		 {
+			//RelativeLayout dialogs_list=(RelativeLayout) findViewById(R.id.dialogs_l);
+			 
+			 TextView d_one= (TextView) findViewById(R.id.one_text);
+			 d_one.setOnClickListener(this);
+			 d_one.setText("samsepi0l");
+			 	 
+		 }
+			 
+		 
+		
+		 public void Dialog_one()
+		 {
+			 boolean wait_answer=false;
+			 dialog_started=true;
+			 TextView name_t= (TextView) findViewById(R.id.Name);
+			 name_t.setText("samsepi0l");
+			 
+			 create_message("Наконец-то ты в сети. Я долго ждал тебя.",true,Color.rgb(234, 240, 210));
+			 
+			 create_message("Привет.",false,Color.rgb(255, 255, 255));
+			 create_message("Мне нужная твоя помощь. Я сейчас слишком занят, но мне нужны данные.",true,Color.rgb(234, 240, 210));
+			 
+			 do
+			 {
+			 switch (el_answers[0])
+			 {
+			 
+			 	case -1:
+			 		wait_answer=true;
+					String ans[]={"Да,я помогу.","Извини, у меня слишком много дел"};
+					create_answer(ans,Color.rgb(255, 255, 255),0);
+					 
+				break;
+				
+			 	case 0:
+			 		dialog_one_steps[0]=-1;
+			 		tag=el_answers[0];
+			 		after_answer(0);
+			 		break;
+			 	case 1:
+			 		dialog_one_steps[0]=-1;
+			 		tag=el_answers[0];
+			 		after_answer(0);
+			 		dialog_one_steps[0]=0;
+			 		tag=el_answers[1];
+			 		after_answer(0);
+			 
+			 }
+			 } while(wait_answer);
+			 
+			 }
+		 
+		 public void Dialog_two()
+		 {
+			 TextView name_t2= (TextView) findViewById(R.id.Name);
+			 name_t2.setText("BaronSamedi");
+			 dialog_started2=true;
+			 create_message("Вы просили написать, когда он снова со мной свяжется.\n",false,Color.rgb(255, 255, 255));
+			 create_message("Он попросил помощи с одним делом.",false,Color.rgb(255, 255, 255));
+			 create_message("Хорошо, что ты рассказал мне.\n",true,Color.rgb(64, 224, 208));
+			 create_message("Что за дело?",true,Color.rgb(64, 224, 208));
+			 
+			 switch (dialog_one_steps[1])
+			 {
+			 
+			 	case -1:
+					 String ans[]={"Нужно достать пароль от компьютера кого-то из ФБР.","Я не могу сказать вам."};
+					 create_answer(ans,Color.rgb(255, 255, 255),1);
+				break;
+				
+			 	case 0:
+			 		dialog_one_steps[1]=-1;
+			 		tag=adam_answers[0];
+			 		after_answer(1);
+			 		break;
+			 	case 1:
+			 		dialog_one_steps[1]=-1;
+			 		tag=adam_answers[0];
+			 		after_answer(1);
+			 		dialog_one_steps[1]=0;
+			 		tag=adam_answers[1];
+			 		after_answer(1);
+			 		break;
+			 		
+			 }
+			 
+		 }
+		 
+		 
+		 public void second_part()
+		 {
+				 create_message("Сейчас я объясню, что ты можешь сделать для меня.",true,Color.rgb(234, 240, 210));
+				 create_message("Хорошо, я слушаю тебя.",false,Color.rgb(255, 255, 255));
+				 create_message("Мне нужен доступ к одному из компьютеров ФБР.\n",true,Color.rgb(234, 240, 210));
+				 create_message("Они нашли что-то, мне нужно с этим разобраться.\n",true,Color.rgb(234, 240, 210));
+				 create_message("Нельзя, чтобы они помешали нам сейчас, когда все так близко.\n",true,Color.rgb(234, 240, 210));
+				 create_message("Сможешь достать мне пароль?",true,Color.rgb(234, 240, 210));
+				 String ans[]={"Без проблем.","Надеюсь. Но как?"};
+				 
+				 create_answer(ans,Color.rgb(255, 255, 255),0);
+		 }
+		 
+		 
+		 public void third_part()
+		 {
+			 
+			 fbi_pass=true;
+			 dialog_two=true;
+			 
+			 if (!dialog_started2)
+			 {
+			 mes_play.start();
+			 }
+			 if (f_pass)
+			 {
+				 fbi_pass=false;
+				 create_message("Ты достал его?",true,Color.rgb(234, 240, 210));
+				 create_message("Да.",false,Color.rgb(255, 255, 255));
+				 create_message("Отлично.\n",true,Color.rgb(234, 240, 210));
+				 create_message("Я знал, что могу тебе доверять.\n",true,Color.rgb(234, 240, 210));
+				 create_message("У меня много работы, свяжусь с тобой позже.",true,Color.rgb(234, 240, 210));
+				 
+			}
+		 }
+		 
+		 public void adam_quest() {
+			 
+			 if (f_pass)
+			 {
+				 create_message("Я закончил с его делом.",false,Color.rgb(255, 255, 255));
+				 create_message("Он все еще не подозревает тебя?",true,Color.rgb(64, 224, 208));
+				 create_message("Нет. Он говорит, что доверяет мне.",false,Color.rgb(255, 255, 255));
+				 create_message("Это хорошо. Продолжай втираться к нему в доверие.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Теперь поговорим о делах.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Набери этот номер в своем телефоне - 756341882 \n",true,Color.rgb(64, 224, 208));
+				 create_message("Тебе добавят несколько контактов.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Выбери одного и попытайся выведать их личные данные для входа в Steel Mountain.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Раньше у тебя не было с этим проблем, так что я рассчитываю на тебя.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Я постараюсь не подвести вас.",false,Color.rgb(255, 255, 255));
+				 
+				 a_data=0;
+			 }
+			 
+		 }
+		 
+		 
+		public void dialog_new(String name_d,int a)
+		 {
+			 LinearLayout dialogs=(LinearLayout) findViewById(R.id.dialogs_l);
+			 TextView d_name= new TextView(this);
+			 d_name.setBackgroundResource(R.drawable.dialog_inlist);
+			 d_name.setTextColor(Color.WHITE);
+			 d_name.setTextSize(18);
+			 d_name.setGravity(Gravity.CENTER_VERTICAL);
+			 d_name.setText(name_d);
+			 d_name.setTag(a);
+			 
+			 dialogs.addView(d_name);
+			 d_name.setOnClickListener(new View.OnClickListener() {
+
+				    public void onClick(View v) {
+				    	tag_dialog= Integer.parseInt(""+v.getTag());
+				    	setContentView(R.layout.dialog_f);
+			        	Back_button_dialogs();
+				    	dialog_find();
+				    	
+				    }
+				});
+			 
+			 
+		 }
+		
+		public void dialog_find()
+		{
+			switch (tag_dialog)
+			{
+			case 2:
+				Dialog_two();
+			
+			
+			}
+			
+			
+			
+		}
+		 
+		 
+		 public void after_answer(int j) {
+			 ScrollView scr_text=(ScrollView) findViewById(R.id.scrollView1);
+			 ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) scr_text.getLayoutParams();
+		     p.bottomMargin=0;
+		     scr_text.requestLayout();
+			
+		     
+			 if (dialog_one_steps[j]<0)
+			 {
+				 dialog_one_steps[j]=0;
+			 }
+			 else
+				 dialog_one_steps[j]++;
+			 
+			 
+			 ScrollView scr_ans=(ScrollView) findViewById(R.id.scrollView2);
+			 scr_ans.setVisibility(View.INVISIBLE);
+			 
+			 switch(j)
+			 {
+			 case 0:
+				 el_answers[dialog_one_steps[j]]=tag;
+				 e_answers();
+				 break;
+			 case 1:
+				 adam_answers[dialog_one_steps[j]]=tag;
+				 a_answers();
+				 break;
+			 
+			 }
+			 
+			 
+		 }
+		 
+		 
+		 
+		 public void e_answers()
+		 {
+			 
+			 switch (dialog_one_steps[0])
+			 {
+			 case 0:
+			 
+			 
+			 if (el_answers[0]==1)
+			 {
+				 create_message("Извини, у меня сейчас слишком много дел. Давай позже?",false,Color.rgb(255, 255, 255));
+				 create_message("Почему ты не поймешь,как это важно?\n",true,Color.rgb(234, 240, 210));
+				 create_message("Мы слишком долго шли к этому, чтобы остановиться сейчас.\n",true,Color.rgb(234, 240, 210));
+				 create_message("Или ты решил сдаться?\n",true,Color.rgb(234, 240, 210));
+				 create_message("В любом случае, мне нужна твоя помощь. А за тобой должок.\n",true,Color.rgb(234, 240, 210));
+			 }
+			 if (el_answers[0]==0)
+			 {
+				 create_message("Хорошо. Что нужно сделать?",false,Color.rgb(255, 255, 255));
+				 create_message("Не думал, что ты так ответишь,но...\n",true,Color.rgb(234, 240, 210));
+				 create_message("Спасибо за помощь.\n",true,Color.rgb(234, 240, 210));
+				 create_message("Кажется, сейчас ты единственный, кому я действительно могу доверять. \n",true,Color.rgb(234, 240, 210));
+			 }
+			 second_part();
+			 break;
+			 
+			 
+			 case 1:
+				 
+			 if (el_answers[1]==0) 
+			 {
+				 create_message("Без проблем. Я справлюсь.",false,Color.rgb(255, 255, 255));
+				 create_message("Спасибо.\n",true,Color.rgb(234, 240, 210));
+				 create_message("Приступай, я свяжусь с тобой позже.",true,Color.rgb(234, 240, 210));
+				  
+			 }
+			 
+			 if (el_answers[1]==1)
+			 {
+				 create_message("Я бы мог тебе пообещать, но не уверен, что знаю, как это сделать.",false,Color.rgb(255, 255, 255));
+				 create_message("Неужели ты забыл все, чему учился?\n",true,Color.rgb(234, 240, 210));
+				 create_message("Тебе нужно открыть браузер, там уже все настроено.\n",true,Color.rgb(234, 240, 210));
+				 create_message("Просто подбери пароль, исходя из информации.\n",true,Color.rgb(234, 240, 210));
+				 create_message("Сделай это. Я надеюсь на твою помощь.",true,Color.rgb(234, 240, 210));
+			 }
+			 
+			 third_part();
+			 break;
+			 
+			 } 
+			 
+			 
+			 
+			 
+		 }
+		 
+		 public void a_answers()
+		 {
+			 
+			 switch (dialog_one_steps[1])
+			 {
+			 case 0:
+			 
+			 
+			 if (adam_answers[0]==0)
+			 {
+				 create_message("Нужно помочь ему подобрать пароль.",false,Color.rgb(255, 255, 255));
+				 create_message("Хорошо.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Разберись с этим, чтобы у него не было подозрений.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Потом свяжись со мной, у меня есть для тебя задание.",true,Color.rgb(64, 224, 208));
+			 }
+			 if (adam_answers[0]==1)
+			 {
+				 
+				 create_message("Я не могу вам сказать.\n",false,Color.rgb(255, 255, 255));
+				 create_message("Он мне доверяет.",false,Color.rgb(255, 255, 255));
+				 create_message("Как и я.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Ты же не хочешь предать мое доверие?\n",true,Color.rgb(64, 224, 208));
+				 create_message("Знаешь же, что будет в этом случае...",true,Color.rgb(64, 224, 208));
+				 create_message("Простите.",false,Color.rgb(255, 255, 255));
+				 create_message("Нужно помочь ему подобрать пароль.",false,Color.rgb(255, 255, 255));
+				 create_message("Хорошо.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Разберись с этим, чтобы у него не было подозрений.\n",true,Color.rgb(64, 224, 208));
+				 create_message("Потом свяжись со мной, у меня есть для тебя задание.",true,Color.rgb(64, 224, 208));
+			 
+			 }
+			 String ans[]={"Хорошо.","Может, вы сразу скажете мне?"};
+			 create_answer(ans,Color.rgb(255, 255, 255),1);
+			 
+			 break;
+			 
+			 case 1:
+				 if (adam_answers[1]==0)
+				 {
+					 create_message("Я вас понял.",false,Color.rgb(255, 255, 255));					 
+				 }
+				 if (adam_answers[1]==1)
+				 {
+					 create_message("Если вы скажете мне его сейчас, я смогу приступить быстрее.",false,Color.rgb(255, 255, 255));
+					 create_message("Если я вывалю на тебя все свои задания разом, толку от тебя будет мало.\n",true,Color.rgb(64, 224, 208));
+					 create_message("Помоги сначала Эллиоту, потом разберемся с дальнейшими действиями.\n",true,Color.rgb(64, 224, 208));
+					 create_message("Хорошо.",false,Color.rgb(255, 255, 255));			
+				 }
+				 
+			 adam_quest();
+			 break;
+			 
+			 }
+			 
+		 }
+		 
+		 
+		 
+		 
+		 public void create_message(String text,boolean speaker,int Color_text) 
+		 {
+				      
+			 	 
+			 //true - собеседник, false- герой 
+			 TextView f_one= new TextView(this);
+			 LinearLayout dialog_text=(LinearLayout) findViewById(R.id.dialog_list);
+			 
+			 f_one.setTextColor(Color_text);
+			 f_one.setText(text);
+			 f_one.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+
+			 LinearLayout.LayoutParams MarginParams = new LinearLayout.LayoutParams(Resources.getSystem().getDisplayMetrics().widthPixels/2, ViewGroup.LayoutParams.WRAP_CONTENT);
+			 if (speaker)
+			 {
+				 
+				 MarginParams.leftMargin = 50;
+				 f_one.setGravity(Gravity.START);
+				 
+			 }
+			 else
+			 {
+				 MarginParams.rightMargin = 50;
+				 MarginParams.gravity = Gravity.END;
+				 f_one.setGravity(Gravity.END);
+				 				 
+			 }
+			 ScrollView scr_text=(ScrollView) findViewById(R.id.scrollView1);
+			 v_scr=scr_text;
+			 scr_text.post(new Runnable() {
+				 
+				    @Override
+				    public void run() {
+				    	
+				        v_scr.scrollTo(0, v_scr.getBottom());
+				    }
+				});
+			 
+			 
+			dialog_text.addView(f_one,MarginParams);
+			
+		 }
+		 
+		 
+
+		 
+		 
+		 public void create_answer(String mas[],int Color_text,int j)
+		 {
+			 ScrollView scr_ans=(ScrollView) findViewById(R.id.scrollView2);
+			 scr_ans.setVisibility(View.VISIBLE);
+			 Button []b_an=new Button[mas.length];
+			 
+			 LinearLayout answer_text=(LinearLayout) findViewById(R.id.answer_list);
+			 answer_text.removeAllViews();
+			 
+			 ScrollView scr_text=(ScrollView) findViewById(R.id.scrollView1);
+			 
+			 ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) scr_text.getLayoutParams();
+			 final float scale = getBaseContext().getResources().getDisplayMetrics().density;
+		     p.bottomMargin=(int)(195 * scale + 0.5f);
+		     scr_text.requestLayout();
+		     dialog_num=j;
+			 for (int i=0;i<mas.length;i++)
+			 {
+				 b_an[i]=new Button(this);
+				 b_an[i].setTextColor(Color_text);
+				 b_an[i].setText("\n"+mas[i]+"\n");
+				 b_an[i].setTag(i);
+				 b_an[i].setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+				 b_an[i].setBackgroundResource(R.drawable.button_text_design);
+				 b_an[i].setGravity(Gravity.END);
+				 
+				 
+				 answer_text.addView(b_an[i]);
+				 
+				 
+				 
+				 b_an[i].setOnClickListener(new View.OnClickListener() {
+
+					    public void onClick(View v) {
+					    
+					    	tag= Integer.parseInt(""+v.getTag());
+					    	after_answer(dialog_num);
+					    	
+					    }
+					});
+
+			    
+			 }
+			 }
+		 
+		
+	
+	
+}
+

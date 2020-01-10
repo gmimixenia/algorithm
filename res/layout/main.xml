@@ -1,0 +1,37 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wallpaper_hacker2"
+    android:fitsSystemWindows="false" >
+
+    <ImageButton
+        android:id="@+id/imageB"
+        style="@style/AppTheme"
+        android:layout_width="440dp"
+        android:layout_height="136dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="103dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginLeft="50dp"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
+        android:src="@drawable/hack_button" />
+
+    <DigitalClock
+        android:id="@+id/digitalClock1"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="70dp"
+        android:clickable="false"
+        android:scaleType="fitXY"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#FFFFFF"
+        android:textColorLink="#FFFFFF"
+        android:textSize="82sp"
+        android:textStyle="normal" />
+
+</RelativeLayout>

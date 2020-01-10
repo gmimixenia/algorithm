@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wallpaper_hacker2"
+    android:orientation="vertical"
+    tools:context=".MainActivity$1" >
+
+    <DigitalClock
+        android:id="@+id/digitalClock1"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="70dp"
+        android:clickable="false"
+        android:scaleType="fitXY"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#FFFFFF"
+        android:textColorLink="#FFFFFF"
+        android:textSize="82sp"
+        android:textStyle="normal"  />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="53dp"        
+        android:scaleType="fitXY"
+        android:layout_marginStart="30px"
+        android:layout_toEndOf="@+id/imageButton1"
+        android:background="@android:color/transparent"
+        android:src="@drawable/browser" />
+
+    <ImageButton
+        android:id="@+id/imageButton4"
+        android:layout_width="80dp"
+        android:layout_height="80dp"        
+        android:scaleType="fitXY"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="47dp"
+        android:layout_marginStart="30px"
+        android:layout_toEndOf="@+id/imageButton2"
+        android:background="@android:color/transparent"
+        android:src="@drawable/circle_app" />
+
+    <ImageButton
+        android:id="@+id/imageButton3"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="53dp"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
+        android:layout_marginStart="120px"
+        android:src="@drawable/phone" />
+
+    <ImageButton
+        android:id="@+id/imageButton1"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignTop="@+id/imageButton3"
+        android:layout_marginStart="30px"
+        android:layout_toEndOf="@+id/imageButton3"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/contacts" />
+
+</RelativeLayout>
